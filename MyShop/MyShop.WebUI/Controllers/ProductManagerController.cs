@@ -5,16 +5,19 @@ using System.Web;
 using System.Web.Mvc;
 using MyShop.Core.Models;
 using MyShop.DataAccess.InMemory;
+using MyShop.Core.ViewModel;
 
 namespace MyShop.WebUI.Controllers
 {
     public class ProductManagerController : Controller
     {
         ProductRepository context;
+        ProductCategoryRepository productCategories;
 
         public ProductManagerController()
         {
             context = new ProductRepository();
+            productCategories = new ProductCategoryRepository();
         }
 
         // GET: ProductManager
@@ -26,8 +29,11 @@ namespace MyShop.WebUI.Controllers
 
         public ActionResult Create()
         {
-            Product product = new Product();
-            return View(product);
+            ProductManagerViewModel viewModel = new ProductManagerViewModel();
+
+            viewModel.Product = new Product();
+            viewModel.productCategories = productCategories.Collection();
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -56,7 +62,12 @@ namespace MyShop.WebUI.Controllers
             }
             else
             {
-                return View(product);
+                ProductManagerViewModel viewModel = new ProductManagerViewModel();
+
+                viewModel.Product =  product;
+                viewModel.productCategories = productCategories.Collection();
+                return View(viewModel);
+                
             }
         }
 
@@ -79,7 +90,7 @@ namespace MyShop.WebUI.Controllers
                 productToEdit.Category = product.Category;
                 productToEdit.Description = product.Description;
                 productToEdit.Image = product.Image;
-                productToEdit.Name = product.Name;
+                productToEdit.Category = product.Category;
                 productToEdit.Price = product.Price;
 
                 context.Commit();
